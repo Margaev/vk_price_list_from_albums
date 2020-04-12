@@ -1,5 +1,6 @@
 import UserInterface
 import VkHandler
+import re
 
 
 def main():
@@ -39,8 +40,20 @@ def make_table(descriptions, vk_handler, album_title_list):
             i += 1
             for v in value:
                 try:
-                    f.write('https://vk.com/photo' + vk_handler.group_id + '_' + str(v[0]) + '\t'
-                            + str(v[1]) + '\t' + str(v[2]) + '\n\n')
+                    prices_str = str(v[2])
+                    prices_re = re.compile(r'\((\d+),(\d+),(\d+),(\d+)\+\)')
+                    try:
+                        prices = list()
+                        prices.append(prices_re.search(prices_str).group(1))
+                        prices.append(prices_re.search(prices_str).group(2))
+                        prices.append(prices_re.search(prices_str).group(3))
+                        prices.append(prices_re.search(prices_str).group(4))
+                        f.write('https://vk.com/photo' + vk_handler.group_id + '_' + str(v[0]) + '\t'
+                                + str(v[1]) + '\t' + prices[0] + '\t' + prices[1]
+                                + '\t' + prices[2] + '\t' + prices[3] + '\n\n')
+                    except AttributeError:
+                        pass
+
                 except IndexError:
                     continue
                 except UnicodeEncodeError:
